@@ -12,7 +12,7 @@ wallpaper picker, app/file launcher, clipboard history, per-app mixer, notificat
 
 ```sh
 sudo pacman -S --needed hyprland quickshell jq fd grim slurp wf-recorder wl-clipboard libpulse \
-    gammastep nemo imagemagick curl playerctl python ttf-0xproto-nerd ttf-opensans
+    gammastep nemo imagemagick curl playerctl python cava ttf-0xproto-nerd ttf-opensans
 yay -S awww mpvpaper          # wallpaper daemon / live wallpapers
 ./install.sh                  # copies the config into ~/.config (backs up what is already there)
 ```
@@ -37,6 +37,9 @@ exec-once = qs -p ~/.config/quickshell/island
 | Super+Shift+V | clipboard history |
 | Super+B | show / hide the bar (hidden by default) |
 
+The control center (round button, top right) also has **Performance** (CPU / RAM / GPU / disk / network) and
+**Shortcuts** (lists the binds of `hyprland.conf` and lets you edit them).
+
 IPC: `qs -p ~/.config/quickshell/island ipc show`
 
 ## Discord widget (optional)
@@ -56,4 +59,5 @@ cp discord_rpc.json.example discord_rpc.json   # and fill in client_id / client_
 
 - Monitor names (`DP-3`, `HDMI-A-1`) and the wallpaper folder (`~/Pictures/wallpapers`) are specific to my machine:
   edit `hyprland.conf` and the Appearance panel / `settings.json`.
+- Settings, clipboard history and launcher history are stored in `~/.local/state/quickshell-island/` (not in the repo).
 - Big wallpapers (gif / mp4 / webm) are not in the repo.

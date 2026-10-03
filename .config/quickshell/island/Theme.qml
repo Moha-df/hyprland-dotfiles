@@ -8,6 +8,9 @@ Singleton {
 
     readonly property string home: Quickshell.env("HOME")
     readonly property string dir: home + "/.config/quickshell/island"
+    // runtime state lives outside the config dir: Quickshell hot-reloads whenever a file in there changes
+    readonly property string stateDir: home + "/.local/state/quickshell-island"
+    Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", stateDir])
 
     // ---- persisted settings (edited from the Appearance panel) ----
     property alias hour24: ad.hour24
@@ -25,7 +28,7 @@ Singleton {
     property alias currentWall: ad.currentWall
 
     FileView {
-        path: root.dir + "/settings.json"
+        path: root.stateDir + "/settings.json"
         watchChanges: true
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
@@ -97,7 +100,7 @@ Singleton {
         play: 0xF040A, pause: 0xF03E4, skipn: 0xF04AD, skipp: 0xF04AE, monitor: 0xF0379, window: 0xF08C6,
         area: 0xF0489, folder: 0xF024B, trash: 0xF01B4, palette: 0xF03D8, search: 0xF0349, sun: 0xF05A8,
         cloud: 0xF0590, rain: 0xF0597, cal: 0xF00ED, lock: 0xF033E, logout: 0xF0343, restart: 0xF0709,
-        sleep: 0xF04B2, stop: 0xF04DB, refresh: 0xF0450, dash: 0xF056E, drop: 0xF058C, dot: 0xF0765, star: 0xF04CE, file: 0xF0214
+        sleep: 0xF04B2, stop: 0xF04DB, refresh: 0xF0450, dash: 0xF056E, drop: 0xF058C, dot: 0xF0765, star: 0xF04CE, file: 0xF0214, chip: 0xF061A, keyboard: 0xF030C, edit: 0xF03EB, plus: 0xF0415, save: 0xF0193, net: 0xF0318, disk: 0xF02CA, therm: 0xF050F
     })
     function glyph(n) { return icons[n] ? String.fromCodePoint(icons[n]) : "?" }
 }

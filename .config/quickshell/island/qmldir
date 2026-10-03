@@ -24,3 +24,5 @@ ToastPanel ToastPanel.qml
 WallPanel WallPanel.qml
 WorkspacePill WorkspacePill.qml
 ClipPanel ClipPanel.qml
+PerfPage PerfPage.qml
+KeysPage KeysPage.qml

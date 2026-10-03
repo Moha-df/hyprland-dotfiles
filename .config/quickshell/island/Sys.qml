@@ -26,7 +26,7 @@ Singleton {
     property var usage: ({})
     FileView {
         id: usageFile
-        path: Theme.dir + "/usage.json"
+        path: Theme.stateDir + "/usage.json"
         onLoaded: { try { Sys.usage = JSON.parse(text()) } catch (e) {} }
     }
     function markUsed(id) {
@@ -41,7 +41,7 @@ Singleton {
     property var clips: []
     FileView {
         id: clipFile
-        path: Theme.dir + "/clipboard.json"
+        path: Theme.stateDir + "/clipboard.json"
         onLoaded: { try { Sys.clips = JSON.parse(text()) } catch (e) {} }
     }
     function saveClips() { clipFile.setText(JSON.stringify(clips)) }
@@ -59,6 +59,51 @@ Singleton {
         running: true
         command: ["wl-paste", "-t", "text", "--watch", "sh", "-c", "jq -Rsc ."]
         stdout: SplitParser { onRead: line => { try { Sys.addClip(JSON.parse(line)) } catch (e) {} } }
+    }
+
+    // ================= performance =================
+    property var perf: ({})
+    property var cpuHist: []
+    property var gpuHist: []
+    property var netHist: []
+    function pushHist(name, v) { const a = root[name].concat([v]); root[name] = a.length > 60 ? a.slice(a.length - 60) : a }
+    Process {
+        running: root.panel === "perf"
+        command: ["python3", "-u", Theme.dir + "/scripts/perf.py"]
+        stdout: SplitParser {
+            onRead: line => {
+                try {
+                    const d = JSON.parse(line);
+                    root.perf = d;
+                    root.pushHist("cpuHist", d.cpu);
+                    root.pushHist("gpuHist", d.gpu && d.gpu.util !== null ? d.gpu.util : 0);
+                    root.pushHist("netHist", d.net_down);
+                } catch (e) {}
+            }
+        }
+    }
+
+    // ================= keybinds (hyprland.conf) =================
+    property var binds: []
+    property string bindMsg: ""
+    function loadBinds() { bindList.running = false; bindList.running = true }
+    function bindOp(args) { bindOpProc.command = ["python3", Theme.dir + "/scripts/binds.py"].concat(args); bindOpProc.running = true }
+    Process {
+        id: bindList
+        command: ["python3", Theme.dir + "/scripts/binds.py", "list"]
+        stdout: StdioCollector { onStreamFinished: { try { root.binds = JSON.parse(text) } catch (e) {} } }
+    }
+    Process {
+        id: bindOpProc
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const r = JSON.parse(text);
+                    root.bindMsg = r.ok ? "" : r.error;
+                } catch (e) { root.bindMsg = "Edit failed" }
+                root.loadBinds();
+            }
+        }
     }
 
     // ================= clock =================
@@ -228,10 +273,33 @@ Singleton {
         }
     }
 
+    // ================= audio spectrum (cava) =================
+    property var bars: []
+    Process {
+        id: cavaProc
+        running: root.mediaOpen && !!root.player && root.player.isPlaying
+        command: ["cava", "-p", Theme.dir + "/scripts/cava.conf"]
+        stdout: SplitParser {
+            onRead: line => {
+                const v = line.split(";").filter(x => x !== "").map(x => parseInt(x) / 100);
+                if (v.length) root.bars = v;
+            }
+        }
+        onRunningChanged: if (!running) root.bars = []
+    }
+
     // ================= media =================
+    property int playerIdx: -1
     readonly property var player: {
         const ps = Mpris.players.values;
+        if (playerIdx >= 0 && playerIdx < ps.length) return ps[playerIdx];
         return ps.find(p => p.isPlaying) ?? ps[0] ?? null;
+    }
+    function cyclePlayer() {
+        const n = Mpris.players.values.length;
+        if (n < 2) return;
+        const cur = Mpris.players.values.indexOf(player);
+        playerIdx = (cur + 1) % n;
     }
 
     // ================= recording =================

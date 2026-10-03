@@ -4,7 +4,7 @@ Rectangle {
     id: p
     readonly property var dims: ({
         home: [380, Sys.homeH], record: [380, 560], capture: [380, 280],
-        appearance: [380, 610], discord: [380, Sys.inVoice ? 560 : 330], power: [380, 420]
+        appearance: [380, 610], discord: [380, Sys.inVoice ? 560 : 330], power: [380, 420], perf: [380, 700], keys: [400, 640]
     })
     readonly property bool open: Sys.panel !== ""
     readonly property string shown: open ? Sys.panel : last
@@ -51,7 +51,7 @@ Rectangle {
         Behavior on opacity { NumberAnimation { duration: p.open ? 300 : 90 } }
         Repeater {
             model: [["home", "HomePage.qml"], ["record", "RecordPage.qml"], ["capture", "CapturePage.qml"],
-                    ["appearance", "AppearancePage.qml"], ["discord", "DiscordPage.qml"], ["power", "PowerPage.qml"]]
+                    ["appearance", "AppearancePage.qml"], ["discord", "DiscordPage.qml"], ["power", "PowerPage.qml"], ["perf", "PerfPage.qml"], ["keys", "KeysPage.qml"]]
             Loader {
                 anchors.fill: parent
                 active: Sys.panel === modelData[0]

@@ -45,6 +45,12 @@ Item {
             Tile { width: root.t3; icon: "music"; label: "Music"; active: Sys.player && Sys.player.isPlaying; onClicked: { Sys.panel = ""; Sys.mediaOpen = true } }
         }
 
+        Row {
+            spacing: Theme.s(8)
+            Tile { width: root.t2; icon: "chip"; label: "Performance"; sub: "CPU · RAM · GPU"; onClicked: Sys.panel = "perf" }
+            Tile { width: root.t2; icon: "keyboard"; label: "Shortcuts"; sub: "view & edit"; onClicked: Sys.panel = "keys" }
+        }
+
         // sound
         Item {
             width: parent.width; height: Theme.s(44)

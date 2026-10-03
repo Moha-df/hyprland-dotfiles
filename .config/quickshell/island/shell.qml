@@ -15,7 +15,7 @@ ShellRoot {
         color: "transparent"
         WlrLayershell.namespace: "island"
         WlrLayershell.keyboardFocus: kbMode ? WlrKeyboardFocus.Exclusive
-                                      : Sys.panel === "appearance" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+                                      : (Sys.panel === "appearance" || Sys.panel === "keys") ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         // launcher / wallpaper picker need real keyboard focus (pointer-follows-focus would steal it from a focus grab)
         readonly property bool kbMode: Sys.island === "launcher" || Sys.island === "wall" || Sys.island === "clip"
 
@@ -31,7 +31,6 @@ ShellRoot {
         }
         mask: Region {
             Rg { it: catcher; on: win.kbMode }
-            Rg { it: leftBtn }
             Rg { it: workspaces }
             Rg { it: island }
             Rg { it: kbPill }
@@ -53,55 +52,20 @@ ShellRoot {
             onClicked: Sys.closeAll()
         }
 
-        // ---- left: music ----
-        Rectangle {
-            id: leftBtn
-            opacity: Sys.barShown ? 1 : 0; visible: opacity > 0; scale: Sys.barShown ? 1 : 0.7
-            Behavior on opacity { NumberAnimation { duration: 220 } }
-            Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack } }
-            x: Theme.s(12); y: Theme.gap
-            width: Theme.s(34); height: width; radius: width / 2
-            color: Sys.mediaOpen ? Theme.accentSoft : Theme.bg
-            border.color: Theme.border
-            Behavior on color { ColorAnimation { duration: 150 } }
-            Ico { anchors.centerIn: parent; n: "music"; visible: !(Theme.visualizer && Sys.player && Sys.player.isPlaying); font.pixelSize: Theme.s(15)
-                  color: Sys.player ? Theme.accent : Theme.sub }
-            Row {
-                anchors.centerIn: parent; spacing: 2; visible: Theme.visualizer && Sys.player && Sys.player.isPlaying
-                Repeater {
-                    model: 4
-                    Rectangle {
-                        width: 3; radius: 1.5; color: Theme.accent; anchors.verticalCenter: parent.verticalCenter
-                        height: 8
-                        SequentialAnimation on height {
-                            running: parent.visible; loops: Animation.Infinite
-                            NumberAnimation { to: 6 + (index * 5 % 11); duration: 260 + index * 70 }
-                            NumberAnimation { to: 18 - (index * 3 % 9); duration: 300 + index * 50 }
-                        }
-                    }
-                }
-            }
-            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: { const o = !Sys.mediaOpen; Sys.closeAll(); Sys.mediaOpen = o } }
-        }
+        // ---- left: music (the round button itself grows into the player) ----
         MediaPop {
             id: media
-            x: leftBtn.x; y: leftBtn.y + leftBtn.height + Theme.s(8)
-            visible: opacity > 0
-            opacity: Sys.mediaOpen ? 1 : 0
-            scale: Sys.mediaOpen ? 1 : 0.9
-            transformOrigin: Item.TopLeft
-            Behavior on opacity { NumberAnimation { duration: 180 } }
-            Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutBack } }
+            x: Theme.s(12)
+            y: Theme.gap
         }
 
         // ---- workspaces ----
         WorkspacePill {
             id: workspaces
-            opacity: Sys.barShown ? 1 : 0; visible: opacity > 0; scale: Sys.barShown ? 1 : 0.7
+            opacity: Sys.barShown && !Sys.mediaOpen ? 1 : 0; visible: opacity > 0; scale: Sys.barShown ? 1 : 0.7
             Behavior on opacity { NumberAnimation { duration: 220 } }
             Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack } }
-            x: leftBtn.x + leftBtn.width + Theme.s(8)
+            x: Theme.s(12) + Theme.s(34) + Theme.s(8)
             y: Theme.gap
         }
 
@@ -143,6 +107,7 @@ ShellRoot {
         target: "island"
         function launcher(): void { Sys.setIsland("launcher") }
         function clip(): void { Sys.setIsland("clip") }
+        function media(): void { const o = !Sys.mediaOpen; Sys.closeAll(); Sys.mediaOpen = o }
         function wall(): void { Sys.setIsland("wall") }
         function calendar(): void { Sys.setIsland("calendar") }
         function mixer(): void { Sys.setIsland("mixer") }
