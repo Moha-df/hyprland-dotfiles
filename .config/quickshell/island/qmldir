@@ -1,0 +1,26 @@
+singleton Theme Theme.qml
+singleton Sys Sys.qml
+AppearancePage AppearancePage.qml
+Btn Btn.qml
+CalendarPanel CalendarPanel.qml
+CapturePage CapturePage.qml
+ClockPanel ClockPanel.qml
+DiscordPage DiscordPage.qml
+HomePage HomePage.qml
+Ico Ico.qml
+IdlePill IdlePill.qml
+Island Island.qml
+LauncherPanel LauncherPanel.qml
+Lbl Lbl.qml
+MediaPop MediaPop.qml
+MixerPanel MixerPanel.qml
+PageHeader PageHeader.qml
+Panel Panel.qml
+PowerPage PowerPage.qml
+RecordPage RecordPage.qml
+Slid Slid.qml
+Tile Tile.qml
+ToastPanel ToastPanel.qml
+WallPanel WallPanel.qml
+WorkspacePill WorkspacePill.qml
+ClipPanel ClipPanel.qml

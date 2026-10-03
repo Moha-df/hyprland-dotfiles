@@ -1,0 +1,9 @@
+# private / machine-local
+.config/quickshell/island/scripts/discord_rpc.json
+.config/quickshell/island/clipboard.json
+.config/quickshell/island/usage.json
+__pycache__/
+*.gif
+*.webp
+*.webm
+*.mp4
